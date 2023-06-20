@@ -6,11 +6,11 @@ ENV LC_ALL=C
 ENV USE_CCACHE=1
 ENV ANDROID_JACK_VM_ARGS="-Dfile.encoding=UTF-8 -XX:+TieredCompilation -Xmx120G"
 ENV JAVA_OPTS=" -Xmx120G "
-ENV BUILD_USERNAME=dotkit
+ENV BUILD_USERNAME=muffler
 ENV CCACHE_EXEC=/usr/bin/ccache
 ENV BUILD_HOSTNAME=android-build
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV USER=dotkit
+ENV USER=muffler
 ENV HOSTNAME=android-build
 
 WORKDIR /tmp
