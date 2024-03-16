@@ -1,17 +1,61 @@
-FROM ubuntu:22.04
+FROM fedora:39
 
-LABEL maintainer="dotkit <ewprjkt@proton.me>"
-ENV DEBIAN_FRONTEND noninteractive
+LABEL maintainer="Tiktodz <ewprjkt@proton.me>"
 
-RUN apt-get -yqq update \
-    && apt-get install --no-install-recommends -yqq glibc-source libc6 adb autoconf lld llvm automake axel bc bison build-essential ccache clang cmake curl expat fastboot flex g++ g++-multilib gawk gcc gcc-multilib git gnupg gperf htop imagemagick locales libncurses5 lib32ncurses5-dev lib32z1-dev libtinfo5 libc6-dev libcap-dev libexpat1-dev libgmp-dev '^liblz4-.*' '^liblzma.*' libmpc-dev libmpfr-dev libncurses5-dev libsdl1.2-dev libssl-dev libtool libxml-simple-perl libxml2 libxml2-utils lsb-core lzip '^lzma.*' lzop maven nano ncftp ncurses-dev openssh-server patch patchelf pkg-config pngcrush pngquant python3 python-all-dev python-is-python3 re2c rclone rsync schedtool squashfs-tools subversion sudo tar texinfo tmate tzdata unzip w3m wget xsltproc zip zlib1g-dev zram-config zstd \
-    && curl --create-dirs -L -o /usr/local/bin/repo -O -L https://storage.googleapis.com/git-repo-downloads/repo \
-    && chmod a+rx /usr/local/bin/repo \
-    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* \
-    && echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && /usr/sbin/locale-gen \
-    && TZ=Asia/Jakarta \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# Install the minimum set of tools
+RUN set -x \
+ && dnf update -y \
+ && dnf -y install \
+    bash-completion \
+    bc \
+    binutils-devel \
+    bison \
+    ccache \
+    clang \
+    cmake \
+    elfutils-libelf-devel \
+    file \
+    flex \
+    gcc \
+    gcc-c++ \
+    git \
+    java-openjdk \
+    jq \
+    lld \
+    make \
+    ninja-build \
+    openssl-devel \
+    openssh-server \
+    python3 \
+    redhat-lsb-core \
+    subversion \
+    sudo \
+    texinfo-tex \
+    uboot-tools \
+    vim-enhanced \
+    xz \
+    zlib-devel \
+    wget \
+    zstd \
+# Install compilation tools
+ && dnf -y install @development-tools \
+ && dnf -y group install "C Development Tools and Libraries" \
+ && echo ". /etc/bash_completion" >> /root/.bashrc \
+# Install the latest git
+ && dnf -y install \ 
+    expat-devel \
+    gnutls-devel \
+    libcurl-devel \
+    openssl-devel \
+    zlib-devel \
+ && export GIT_VER=2.39.3 \
+ && cd /tmp && wget -q --no-check-certificate https://mirrors.edge.kernel.org/pub/software/scm/git/git-${GIT_VER}.tar.gz \
+ && tar -xf git-${GIT_VER}.tar.gz \
+ && cd git-${GIT_VER} \
+ && make prefix=/usr CFLAGS="-std=gnu99" NO_UNCOMPRESS2=true all -j `nproc` \
+ && make prefix=/usr CFLAGS="-std=gnu99" NO_UNCOMPRESS2=true install \
+ && cd /tmp ; sudo rm -rf v${GIT_VER}.tar.gz git-${GIT_VER}*
 
 WORKDIR /tmp
-VOLUME ["/tmp/ccache", "/tmp/sdm660"]
+VOLUME ["/tmp/ccache", "/tmp/queen"]
 ENTRYPOINT ["/bin/bash"]

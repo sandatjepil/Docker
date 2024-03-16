@@ -1,2 +1,4 @@
- * [**Image**](https://hub.docker.com/u/wizardprjkt)
- 
+## Docker Pull Command
+```
+docker pull wizardprjkt/build:kernel
+```
