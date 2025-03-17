@@ -1,4 +1,4 @@
-name: fedora - Docker Build
+name: Debian - Docker Build
 
 on:
   push:

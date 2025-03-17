@@ -1,4 +1,4 @@
 ## Docker Pull Command
 ```
-docker pull wizardprjkt/build:kernel
+docker pull sandatjepil/build:kernel
 ```
