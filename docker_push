@@ -22,7 +22,7 @@ RUN set -x \
  lld \
  openjdk-21-jdk \
  tzdata \
- git -y \ # Set the timezone and update git
+ git -y \
  && timedatectl set-timezone Asia/Jakarta \
  && TZ=Asia/Jakarta \
  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
