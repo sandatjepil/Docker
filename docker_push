@@ -1,39 +1,32 @@
-FROM debian:trixie
+FROM archlinux:latest
 
 LABEL maintainer="Agus Suristyono <sandatjepil@proton.me>"
 
 # Install the minimum set of tools
 RUN set -x \
- && apt-get -qq update \
- && apt-get -qq upgrade -y \
- && DEBIAN_FRONTEND=noninteractive apt-get -qq install --no-install-recommends \
- bc \
- build-essential \
- bison \
- flex \
- zip \
- tar \
- zstd \
- libc6 \
- libstdc++6 \
- curl \
- wget \
- libssl-dev \
- lld \
- openjdk-21-jdk \
- tzdata \
- git \
- sudo -y \
- && timedatectl set-timezone Asia/Jakarta \
- && TZ=Asia/Jakarta \
- && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
- && export GIT_VER=2.49.0 \
- && cd /tmp && wget -q --no-check-certificate https://mirrors.edge.kernel.org/pub/software/scm/git/git-${GIT_VER}.tar.gz \
- && tar -xf git-${GIT_VER}.tar.gz \
- && cd git-${GIT_VER} \
- && make prefix=/usr CFLAGS="-std=gnu99" NO_UNCOMPRESS2=true all -j `nproc` \
- && make prefix=/usr CFLAGS="-std=gnu99" NO_UNCOMPRESS2=true install \
- && cd /tmp ; sudo rm -rf v${GIT_VER}.tar.gz git-${GIT_VER}*
+  && pacman -Syu --noconfirm \
+  && pacman -S --noconfirm --needed base-devel \
+  bc \
+  bison \
+  ccache \
+  clang \
+  cpio \
+  cmake \
+  flex \
+  git \
+  libelf \
+  lld \
+  llvm \
+  ninja \
+  openssl \
+  python3 \
+  uboot-tools \
+  hub \
+  tzdata \
+  curl wget \
+  tar zstd sudo
+
+ENV TZ="Asia/Jakarta"
 
 WORKDIR /tmp
 VOLUME ["/tmp/ccache", "/tmp/krenul"]
