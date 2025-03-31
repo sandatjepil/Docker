@@ -1,9 +1,7 @@
-name: Arch Linux - Docker Build
+name: Ubuntu:Jammy - Docker Buildx
 
 on:
-  push:
   workflow_dispatch:
-    branches: [ main ]
 
 jobs:
 

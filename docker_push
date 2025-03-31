@@ -1,33 +1,77 @@
-FROM archlinux:latest
+FROM ubuntu:22.04
 
-LABEL maintainer="Agus Suristyono <sandatjepil@proton.me>"
+ENV TZ="Asia/Jakarta" \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US \
+    LC_ALL=en_US.UTF-8 \
+    DEBIAN_FRONTEND=noninteractive
 
-# Install the minimum set of tools
-RUN set -x \
-  && pacman -Syu --noconfirm \
-  && pacman -S --noconfirm --needed base-devel \
-  bc \
-  bison \
-  ccache \
-  clang \
-  cpio \
-  cmake \
-  flex \
-  git \
-  libelf \
-  lld \
-  llvm \
-  ninja \
-  openssl \
-  python3 \
-  uboot-tools \
-  hub \
-  tzdata \
-  curl wget \
-  tar zstd sudo
+# Install base dependencies & LLVM APT repo
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    gnupg ca-certificates curl lsb-release wget && \
+    curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg && \
+    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" > /etc/apt/sources.list.d/llvm.list && \
+    apt-get update
 
-ENV TZ="Asia/Jakarta"
+# Install all dependencies
+RUN apt-get install -y --no-install-recommends \
+    bc \
+    binutils-dev \
+    bison \
+    build-essential \
+    ccache \
+    clang-19 lld-19 libc++-19-dev libc++abi-19-dev \
+    cmake \
+    file \
+    flex \
+    git \
+    libelf-dev \
+    libssl-dev \
+    libstdc++-11-dev \
+    make \
+    ninja-build \
+    python2 \
+    python3-dev \
+    texinfo \
+    u-boot-tools \
+    xz-utils \
+    zlib1g-dev \
+    perl \
+    python3-yaml \
+    python3-pygments \
+    zip \
+    locales \
+    sudo \
+    tzdata \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
+# Symlink clang-19 as default clang
+RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100 && \
+    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-19 100
+
+# Setup locale
+RUN sed -i 's/^# *en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=en_US.UTF-8
+
+# Install hub CLI (2.14.2)
+RUN curl -sSL https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz | tar -xz && \
+    cd hub-linux-amd64-2.14.2 && \
+    ./install && \
+    mv bin/hub /usr/local/bin/hub && \
+    cd .. && rm -rf hub-linux-amd64-2.14.2
+
+# Build zstd 1.5.7
+RUN curl -sSL https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz | tar -xz && \
+    cd zstd-1.5.7 && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && rm -rf zstd-1.5.7
+
+# Working dir dan volume
 WORKDIR /tmp
-VOLUME ["/tmp/ccache", "/tmp/krenul"]
+
 ENTRYPOINT ["/bin/bash"]
