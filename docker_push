@@ -1,33 +1,37 @@
 FROM archlinux:latest
 
-LABEL maintainer="Agus Suristyono <sandatjepil@proton.me>"
-
 # Install the minimum set of tools
 RUN set -x \
-  && pacman -Syu --noconfirm \
-  && pacman -S --noconfirm --needed base-devel \
-  bc \
-  bison \
-  ccache \
-  clang \
-  cpio \
-  cmake \
-  flex \
-  git \
-  libelf \
-  lld \
-  llvm \
-  ninja \
-  openssl \
-  python3 \
-  uboot-tools \
-  hub \
-  tzdata \
-  curl wget \
-  tar zstd sudo
+ && pacman -Syu --noconfirm \
+ && pacman -S --noconfirm --needed \
+    base-devel bc bison cmake \
+    ccache \
+    llvm clang lld glibc libelf \
+    cpio \
+    flex \
+    git hub \
+    jdk-openjdk \
+    ninja \
+    openssl \
+    ca-certificates \
+    perl \
+    python python-yaml python-pygments \
+    uboot-tools \
+    tzdata \
+    curl wget tar zstd zip sudo \
+ && sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen \
+ && locale-gen \
+ && echo 'LANG=en_US.UTF-8' > /etc/locale.conf \
+ && echo 'export PATH=/usr/bin/core_perl:$PATH' > /etc/profile.d/perl.sh \
+ && pacman -Scc --noconfirm \
+ && rm -rf /var/cache/pacman/pkg/* /var/lib/pacman/sync/*
 
-ENV TZ="Asia/Jakarta"
+ENV TZ="Asia/Jakarta" \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US \
+    LC_ALL=en_US.UTF-8 \
+    PATH="/usr/bin/core_perl:$PATH"
 
 WORKDIR /tmp
-VOLUME ["/tmp/ccache", "/tmp/krenul"]
+VOLUME ["/tmp/ccache", "/tmp/queen"]
 ENTRYPOINT ["/bin/bash"]

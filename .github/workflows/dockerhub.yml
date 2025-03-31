@@ -1,9 +1,7 @@
-name: Arch Linux - Docker Build
+name: Arch Linux - Docker Buildx
 
 on:
-  push:
   workflow_dispatch:
-    branches: [ main ]
 
 jobs:
 
@@ -35,7 +33,7 @@ jobs:
           context: ./
           file: ./docker_push
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/build:toolchain
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/build:archlinux
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
