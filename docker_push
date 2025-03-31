@@ -5,29 +5,25 @@ LABEL maintainer="Agus Suristyono <sandatjepil@proton.me>"
 # Install the minimum set of tools
 RUN set -x \
   && pacman -Syu --noconfirm \
-  && pacman -S --noconfirm --needed base-devel \
-  bc \
-  bison \
+  && pacman -S --noconfirm --needed \
+  base-devel bc bison cmake \
   ccache \
-  clang \
+  llvm clang lld glibc libelf \
   cpio \
-  cmake \
   flex \
-  git \
-  libelf \
-  lld \
-  llvm \
+  git hub \
+  jdk-openjdk \
   ninja \
   openssl \
-  python3 \
+  ca-certificates \
+  perl \
+  python python3 python-yaml python-pygments \
   uboot-tools \
-  hub \
   tzdata \
-  curl wget \
-  tar zstd sudo
+  curl wget tar zstd zip sudo
 
 ENV TZ="Asia/Jakarta"
 
 WORKDIR /tmp
-VOLUME ["/tmp/ccache", "/tmp/krenul"]
+VOLUME ["/tmp/ccache", "/tmp/queen"]
 ENTRYPOINT ["/bin/bash"]
