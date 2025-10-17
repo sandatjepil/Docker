@@ -6,22 +6,20 @@ ENV TZ="Asia/Jakarta" \
     LC_ALL=en_US.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
 
-# Install base dependencies & LLVM APT repo
+# Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common \
     gnupg ca-certificates curl lsb-release wget && \
     curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg && \
-    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" > /etc/apt/sources.list.d/llvm.list && \
-    apt-get update
-
-# Install all dependencies
-RUN apt-get install -y --no-install-recommends \
+    echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-20 main" > /etc/apt/sources.list.d/llvm.list && \
+    apt-get update \
+ && apt-get install -y --no-install-recommends \
     bc \
     binutils-dev \
     bison \
     build-essential \
     ccache \
-    clang-19 lld-19 libc++-19-dev libc++abi-19-dev \
+    clang-20 lld-20 libc++-20-dev libc++abi-20-dev \
     cmake \
     file \
     flex \
@@ -44,34 +42,26 @@ RUN apt-get install -y --no-install-recommends \
     locales \
     sudo \
     tzdata \
+    default-jre \
  && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
-
-# Symlink clang-19 as default clang
-RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100 && \
-    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100 && \
-    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-19 100
-
-# Setup locale
-RUN sed -i 's/^# *en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+ && rm -rf /var/lib/apt/lists/* \
+ && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100 && \
+    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-20 100 \
+ && sed -i 's/^# *en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen && \
-    update-locale LANG=en_US.UTF-8
-
-# Install hub CLI (2.14.2)
-RUN curl -sSL https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz | tar -xz && \
+    update-locale LANG=en_US.UTF-8 \
+ && curl -sSL https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz | tar -xz && \
     cd hub-linux-amd64-2.14.2 && \
     ./install && \
     mv bin/hub /usr/local/bin/hub && \
-    cd .. && rm -rf hub-linux-amd64-2.14.2
-
-# Build zstd 1.5.7
-RUN curl -sSL https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz | tar -xz && \
+    cd .. && rm -rf hub-linux-amd64-2.14.2 \
+ && curl -sSL https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz | tar -xz && \
     cd zstd-1.5.7 && \
     make -j$(nproc) && \
     make install && \
     cd .. && rm -rf zstd-1.5.7
 
-# Working dir dan volume
 WORKDIR /tmp
 
 ENTRYPOINT ["/bin/bash"]

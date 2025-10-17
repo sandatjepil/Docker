@@ -33,7 +33,7 @@ jobs:
           context: ./
           file: ./docker_push
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/build:toolchain
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/build:jammy
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
